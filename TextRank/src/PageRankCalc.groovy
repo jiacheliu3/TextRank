@@ -4,17 +4,30 @@ import Jama.Matrix
 class PageRankCalc {
 	public static double damping=0.85;
 	public static double threshold=0.00001;
-	public static setDamping(double d){
+	public static HashSet<String> stopWords;
+	static{
+		initStopWords();
+	}
+	public static void initStopWords(){
+		File repo=new File('models/stopwords/StopWords.txt');
+		stopWords=new HashSet<>();
+		stopWords.addAll(repo.readLines('utf-8'));
+		println("Initialized ${stopWords.size()} stop words.");
+		
+	}
+	public static void setDamping(double d){
 		damping=d;
 	}
-	public static setThreshold(double d){
+	public static void setThreshold(double d){
 		threshold=d;
 	}
 	public static Map<String,Integer> constructIndexMap(Collection<String> nodes){
 		Map<String,Integer> indexMap=new HashMap<>();
 		int count=0;
 		for(String node:nodes){
-			indexMap.put(node, count);
+			
+				indexMap.put(node, count);
+			
 			count++;
 			
 		}
@@ -22,9 +35,10 @@ class PageRankCalc {
 	}
 	public static Matrix constructTransitionMatrix(Collection<String> nodes,Set<Map> edges,Map<String,Integer> indexMap,boolean isDirected){
 		int n=nodes.size();
-		
+		int x=edges.size();
+		println("${n} nodes and ${x} edges");
 		//construct adjacency matrix
-		Map<String,Integer> sizeMap=new HashMap<>();
+		Map<String,Integer> sizeMap=new HashMap<>();//out-degree of each node
 		Matrix A=new Matrix(n,n);
 		for(Map<String,String> m:edges){
 			String source=m["source"];
@@ -32,8 +46,13 @@ class PageRankCalc {
 			double weight=m["weight"];
 			int row=indexMap[source];
 			int col=indexMap[target];
-			
-			A.set(row, col, weight);
+			//ignore the edge if containing stop words
+			if(stopWords.contains(source)||stopWords.contains(target)){
+				continue;
+			}
+			//else update the degree of the node
+			double value=A.get(row,col);
+			A.set(row, col, value+weight);
 			
 			if(sizeMap.containsKey(source)){
 				sizeMap[source]+=1;
@@ -42,7 +61,8 @@ class PageRankCalc {
 			}
 			//if the graph is not directed, the target also gives out the link
 			if(!isDirected){
-				A.set(col, row, weight);
+				double v=A.get(row,col);
+				A.set(col, row, v+weight);
 				
 				if(sizeMap.containsKey(target)){
 					sizeMap[target]+=1;
@@ -51,11 +71,15 @@ class PageRankCalc {
 				}
 			}
 		}	
+		//A.print(5, 2);
 		//construct transition matrix
 		Matrix M=new Matrix(n,n);
 		for(def e:indexMap){
 			String nodeName=e.key;
 			int row=indexMap[nodeName];
+			if(row==null){
+				continue;
+			}
 			int size;
 			if(sizeMap.containsKey(nodeName)){
 				size=sizeMap[nodeName];
@@ -70,9 +94,14 @@ class PageRankCalc {
 				}
 			}
 			else{
+				double sigma=0;
 				for(int i=0;i<n;i++){
 					double d=A.get(row, i);
-					M.set(row,i,d/size);
+					sigma+=d;//when weight of every edge is 1, sigma=size
+				}
+				for(int i=0;i<n;i++){
+					double w=A.get(row, i);//w=0 when no edge
+					M.set(row,i,w/sigma);
 				}
 			}
 			
@@ -80,7 +109,7 @@ class PageRankCalc {
 			
 			
 		}
-		
+		//M.print(5,2);
 		println("Transition matrix complete.");
 		return M;
 		
@@ -100,12 +129,15 @@ class PageRankCalc {
 		Matrix N=new Matrix(1,n,1.0/n);
 		//iteratively calculate
 		Matrix I=new Matrix(1,n,(1.0-damping)/n);
+		println("Start to compute pagerank");
 //		//approximation of times of iterations
 //		int iter=(int)(Math.log(n)/Math.log(10))+1;
 //		for(int i=0;i<iter;i++){
 //			N=N.times(M.times(damping)).plus(I);
 //		}
+		
 		boolean converged=false;
+		int times=0;
 		while(!converged){
 			Matrix nextN=N.times(M.times(damping)).plus(I);
 			//nextN.print(0, n-1);
@@ -114,9 +146,11 @@ class PageRankCalc {
 			if(error<=threshold){
 				converged=true;
 			}
+			times++;
 		}
+		println("Converged in ${times} iterations.");
 		//assign ranks to nodes
-		Map<String,Double> pageRank=new HashMap<>();
+		Map<String,Double> pageRank=new LinkedHashMap<>();
 		def findName={number->
 			for(def e:indexMap){
 				if(e.value==number)
@@ -133,7 +167,7 @@ class PageRankCalc {
 	public static Map<String,Double> normalize(Map<String,Double> pagerank){
 		double sum=0.0;
 		int count=pagerank.size();
-		Map<String,Double> normalizedRank=new HashMap<>();
+		Map<String,Double> normalizedRank=new LinkedHashMap<>();
 		pagerank.each{
 			sum+=it.value;
 			

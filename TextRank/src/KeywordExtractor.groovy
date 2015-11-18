@@ -1,7 +1,13 @@
+import groovy.time.TimeCategory
+
 class KeywordExtractor{
 	public static Set<String> extractKeywords(String content,int windowSize,int number){
+		def timeStart = new Date();
 		ArrayList<String> segments=FnlpManager.justSegment(content);
 		Map<String,Double> results=getTopTextRank(segments,windowSize,number);
+		def timeEnd=new Date();
+		println "Keyword extraction completed in "+TimeCategory.minus(timeEnd, timeStart);
+		
 		return results.keySet();
 		
 	}
@@ -15,18 +21,20 @@ class KeywordExtractor{
 		for(int i=0;i<iter;i++){
 			String source=words[i];
 			//for every slide of the window, establish links among every two nodes
-			for(int j=0;j<windowSize;j++){
+			for(int j=1;j<windowSize;j++){
 				String target=words[i+j];
 				Map<String,String> edge=new HashMap<>();
-				edge.put('source', words);
+				edge.put('source', source);
 				edge.put('target', target);
 				edge.put('weight',1.0);
-				
+				edges.add(edge);
 			}
 		}
 		
 		//calculate page rank
 		Map<String,Double> pageRank=PageRankCalc.calculatePageRank(nodes, edges, false);
+		//sort by pagerank
+		pageRank=pageRank.sort { a, b -> b.value <=> a.value }
 		//return the top keywords
 		int c=0;
 		Map<String,Double> keywords=new HashMap<>();
@@ -46,7 +54,7 @@ class KeywordExtractor{
 		println keywords3;
 		Set<String> keywords5 = extractKeywords(content,5,10);
 		println keywords5;
-		Set<String> keywords10 = extractKeywords(content,2,10);
+		Set<String> keywords10 = extractKeywords(content,10,10);
 		println keywords10;
 		
 	}
