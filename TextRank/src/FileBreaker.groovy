@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +11,10 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReaderTest {
+
+class FileBreaker {
+	static String path="C:\\sorted\\";
+	
 	public static Pattern id;
 	public static Pattern ws;
 	public static Pattern block;
@@ -37,31 +39,8 @@ public class ReaderTest {
 		
 		image=Pattern.compile("http[s]?://.*\\.jpg");
 	}
-	public static void processFile(File file){
-		BufferedReader reader=null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(file), "UTF8"));
-		} catch (UnsupportedEncodingException | FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally{
-			System.out.println("Finished processing file "+file.getPath());
-		}
-		String line;
-		
-
-		try {
-			while ((line = reader.readLine()) != null) {
-				processLine(line);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private static void processLine(String line) {
+	public static Weibo processLine(String line) {
+		String lineBackUp=line;
 		Weibo w = new Weibo();
 		Matcher m = id.matcher(line);
 
@@ -104,15 +83,6 @@ public class ReaderTest {
 				System.out.println("Error in time parsing");
 			}
 		}
-//			String dt=date+"\\s+"+time;
-//			Pattern dtp=Pattern.compile(dt);
-//			Matcher dtm=dtp.matcher(sub);
-//			if(!dtm.find()){
-//				System.out.println("Date not found");
-//				
-//			}
-		
-		//System.out.println(bm.group());
 		int contentEnd=bm.start();
 		int blockEnd=bm.end();
 		String content=line.substring(contentStart,contentEnd).trim();
@@ -156,6 +126,8 @@ public class ReaderTest {
 		}
 		//save current process
 		w.setContent(content);
+		processWeibo(w);
+		
 		System.out.println("Successfully created weibo "+w.toString());
 		//check if another weibo is on the same line
 		Matcher yabm=block.matcher(line);
@@ -163,10 +135,98 @@ public class ReaderTest {
 			System.out.println("Another weibo item on the same line!");
 			processLine(line);
 		}
+		return w;
+	}
+	public static void processWeibo(Weibo w){
+		Date date=w.getCreateDate();
+		String dateString=processDate(date);
+		File outputFile=new File(path+dateString);
+		if(!outputFile.exists()){
+			outputFile.createNewFile();
+		}
+		outputFile.withWriter('UTF-8') {
+			it.writeLine w.content;
+		}
+		
+		
+	}
+	public static String processDate(Date date){
+		int y=date.getYear()+1900;
+		String year=y+"";
+		int m=date.getMonth()+1;
+		String month;
+		if(m<10){
+			month="0"+m;
+		}else{
+			month=m+'';
+		}
+		int d=date.getDate();
+		String day;
+		if(d<10){
+			day="0"+d;
+		}else{
+			day=d+'';
+		}
+		int h=date.getHours();
+		String hour;
+		if(h<10){
+			hour="0"+h;
+		}else{
+			hour=h+'';
+		}
+		
+		//println("Year:${y},Month:${m},Date:${d},Hour:${h}");
+		return year+month+day+hour;
+		
+	}
+	public static void processFile(File file){
+		BufferedReader reader=null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(
+					new FileInputStream(file), "UTF8"));
+		} catch (UnsupportedEncodingException | FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			System.out.println("Finished processing file "+file.getPath());
+		}
+		String line;
+		
+
+		try {
+			while ((line = reader.readLine()) != null) {
+				try{
+					processLine(line);
+				}catch(Exception e){
+					println "Something is wrong with this line, but things must go on.";
+					println e.message;
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void startProcess(String inputPath,String outputPath){
+		File outputFile=new File(outputPath);
+		if(!outputFile.isDirectory()){
+			println "Error! Please put a valid directory path in outputPath!";
+			return;
+		}
+		path=outputPath;
+		
+		println "Output path set to ${path}";
+		File file=new File(inputPath);
+		if(file.isDirectory()){
+			file.eachFile {
+				processFile(it);
+			}
+		}else{
+			processFile(file);
+		}
 	}
 	public static void main(String[] args) throws Exception {
-		File mb = new File("C:\\data\\UserWeibos201201");
-		processFile(mb);
+		startProcess("C:\\data","C:\\Users\\user\\sorted\\");
 
 	}
 }

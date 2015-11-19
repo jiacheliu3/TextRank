@@ -3,6 +3,7 @@ class Weibo {
 	String id;
 	Date createDate;
 	String content;
+	//String fullContent;
 	@Override
 	public String toString(){
 		"ID: ${id}\nDate: ${createDate}\nContent: ${content}";
