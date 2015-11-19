@@ -29,7 +29,7 @@ class TextRankTester {
 					truePos++;
 				}
 				else if(a.contains(it)||it.contains(a)){
-					println "well this may also count";
+					//println "well this may also count";
 					truePos=truePos+0.5;
 				}
 					

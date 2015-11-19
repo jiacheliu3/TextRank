@@ -44,6 +44,8 @@ class KeywordExtractor{
 			if(c>=keywordNum)
 				break;
 		}
+		//merge keywords if possible
+		
 		return keywords;
 	}
 	public static void main(String[] args){
