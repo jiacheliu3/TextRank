@@ -1,3 +1,4 @@
+package edu.cityu.textrank
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -145,7 +146,7 @@ class FileBreaker {
 			outputFile.createNewFile();
 		}
 		outputFile.withWriter('UTF-8') {
-			it.writeLine w.content;
+			it.append("\n"+w.content);
 		}
 		
 		
@@ -226,7 +227,12 @@ class FileBreaker {
 		}
 	}
 	public static void main(String[] args) throws Exception {
-		startProcess("C:\\data","C:\\Users\\user\\sorted\\");
+		//startProcess("C:\\data","C:\\Users\\user\\sorted\\");
+		File f=new File("D:\\gogo");
+		if(!f.exists())
+			f.createNewFile();
+		f.append("Go",'UTF-8');
+		f.append("Gogo\n",'UTF-8');
 
 	}
 }

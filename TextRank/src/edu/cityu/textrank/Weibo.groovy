@@ -1,3 +1,4 @@
+package edu.cityu.textrank
 
 class Weibo {
 	String id;
@@ -12,4 +13,5 @@ class Weibo {
 	public int hashCode(){
 		return id.hashCode()+createDate.hashCode()+content.hashCode();
 	}
+
 }

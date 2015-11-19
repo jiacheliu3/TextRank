@@ -1,3 +1,4 @@
+package edu.cityu.textrank
 
 class TextRankTester {
 	static ArrayList<Double> recallList;
@@ -12,7 +13,12 @@ class TextRankTester {
 		fScoreList=new ArrayList<>();
 	}
 	public static double fScore(double precision,double recall){
-		return 2*(precision*recall)/(precision+recall);
+		double denom=precision+recall;
+		if(denom==0){
+			return 0;
+		}else{
+			return 2*(precision*recall)/denom;
+		}
 	}
 	public static void checkAccuracy(String content,Collection<String> answer,int windowSize){
 		int length=content.length();
@@ -65,7 +71,11 @@ class TextRankTester {
 	public static void readTests(String path){
 		
 		File folder=new File(path);
-		def windowSizeList=[2,3,5,10];
+		if(!folder.isDirectory()){
+			println "Please place all samples in a folder and pass it in!";
+			return;
+		}
+		def windowSizeList=[2,3,4,5,6,10];
 		windowSizeList.each{s->
 			println("Now the window size is ${s}")
 		
@@ -81,7 +91,7 @@ class TextRankTester {
 		}
 	}
 	public static void main(String[] args){
-		String path="C:\\Users\\user\\git\\TextRank\\TextRank\\test";
+		String path="C:\\Users\\user\\Documents\\samples";
 		readTests(path);
 		
 	}

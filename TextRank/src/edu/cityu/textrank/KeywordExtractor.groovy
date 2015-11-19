@@ -1,3 +1,4 @@
+package edu.cityu.textrank
 import groovy.time.TimeCategory
 
 class KeywordExtractor{
@@ -10,6 +11,12 @@ class KeywordExtractor{
 		
 		return results.keySet();
 		
+	}
+	public static Set<String> extractKeywords(String content){
+		int l=content.length();
+		int expected=Math.round(Math.sqrt(l));
+		//use window size 5
+		return extractKeywords(content,5,expected);
 	}
 	public static Map<String,Double> getTopTextRank(ArrayList<String> words,int windowSize,int keywordNum){
 		//construct node set
