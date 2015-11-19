@@ -167,16 +167,16 @@ class FileBreaker {
 		}else{
 			day=d+'';
 		}
-		int h=date.getHours();
-		String hour;
-		if(h<10){
-			hour="0"+h;
-		}else{
-			hour=h+'';
-		}
+//		int h=date.getHours();
+//		String hour;
+//		if(h<10){
+//			hour="0"+h;
+//		}else{
+//			hour=h+'';
+//		}
 		
 		//println("Year:${y},Month:${m},Date:${d},Hour:${h}");
-		return year+month+day+hour;
+		return year+month+day;
 		
 	}
 	public static void processFile(File file){
