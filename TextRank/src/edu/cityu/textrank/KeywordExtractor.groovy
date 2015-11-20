@@ -27,9 +27,15 @@ class KeywordExtractor{
 		int iter=words.size()-windowSize+1;
 		for(int i=0;i<iter;i++){
 			String source=words[i];
+			if(source.matches(Patterns.NONTEXT.value())){
+				continue;
+			}
 			//for every slide of the window, establish links among every two nodes
 			for(int j=1;j<windowSize;j++){
 				String target=words[i+j];
+				if(target.matches(Patterns.NONTEXT.value())){
+					continue;
+				}
 				Map<String,String> edge=new HashMap<>();
 				edge.put('source', source);
 				edge.put('target', target);

@@ -1,4 +1,6 @@
 package edu.cityu.textrank
+import java.util.regex.Pattern
+
 import Jama.Matrix
 
 
@@ -10,9 +12,13 @@ class PageRankCalc {
 		initStopWords();
 	}
 	public static void initStopWords(){
-		File repo=new File('models/stopwords/StopWords.txt');
+		String base="models/stopwords/";
+		def stopwordFiles=["stopwords_cn.txt",'stopwords_en.txt','stopwords_tw.txt'];
 		stopWords=new HashSet<>();
-		stopWords.addAll(repo.readLines('utf-8'));
+		stopwordFiles.each{
+			File repo=new File(base+it);
+			stopWords.addAll(repo.readLines('utf-8'));
+		}
 		println("Initialized ${stopWords.size()} stop words.");
 		
 	}
@@ -41,6 +47,7 @@ class PageRankCalc {
 		//construct adjacency matrix
 		Map<String,Integer> sizeMap=new HashMap<>();//out-degree of each node
 		Matrix A=new Matrix(n,n);
+		Pattern nonsense=Pattern.compile('[^A-Za-z0-9\u4e00-\u9fa5]+');
 		for(Map<String,String> m:edges){
 			String source=m["source"];
 			String target=m["target"];
