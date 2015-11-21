@@ -131,11 +131,11 @@ class FileBreaker {
 		
 		System.out.println("Successfully created weibo "+w.toString());
 		//check if another weibo is on the same line
-		Matcher yabm=block.matcher(line);
-		if(yabm.find()){
-			System.out.println("Another weibo item on the same line!");
-			processLine(line);
-		}
+//		Matcher yabm=block.matcher(line);
+//		if(yabm.find()){
+//			System.out.println("Another weibo item on the same line!");
+//			processLine(line);
+//		}
 		return w;
 	}
 	public static void processWeibo(Weibo w){
@@ -145,11 +145,14 @@ class FileBreaker {
 		if(!outputFile.exists()){
 			outputFile.createNewFile();
 		}
-		outputFile.withWriter('UTF-8') {
-			it.append("\n"+w.content);
-		}
+		
+		outputFile.append("\n"+weiboToString(w));
 		
 		
+		
+	}
+	public static String weiboToString(Weibo w){
+		return processToHour(w.createDate)+"\t"+w.content;
 	}
 	public static String processDate(Date date){
 		int y=date.getYear()+1900;
@@ -178,6 +181,35 @@ class FileBreaker {
 		
 		//println("Year:${y},Month:${m},Date:${d},Hour:${h}");
 		return year+month+day;
+		
+	}
+	public static String processToHour(Date date){
+		int y=date.getYear()+1900;
+		String year=y+"";
+		int m=date.getMonth()+1;
+		String month;
+		if(m<10){
+			month="0"+m;
+		}else{
+			month=m+'';
+		}
+		int d=date.getDate();
+		String day;
+		if(d<10){
+			day="0"+d;
+		}else{
+			day=d+'';
+		}
+		int h=date.getHours();
+		String hour;
+		if(h<10){
+			hour="0"+h;
+		}else{
+			hour=h+'';
+		}
+		
+		//println("Year:${y},Month:${m},Date:${d},Hour:${h}");
+		return year+month+day+hour;
 		
 	}
 	public static void processFile(File file){
@@ -227,12 +259,12 @@ class FileBreaker {
 		}
 	}
 	public static void main(String[] args) throws Exception {
-		//startProcess("C:\\data","C:\\Users\\user\\sorted\\");
-		File f=new File("D:\\gogo");
-		if(!f.exists())
-			f.createNewFile();
-		f.append("Go",'UTF-8');
-		f.append("Gogo\n",'UTF-8');
+		startProcess("C:\\data","C:\\Users\\user\\sorted\\");
+//		File f=new File("D:\\gogo");
+//		if(!f.exists())
+//			f.createNewFile();
+//		f.append("Go",'UTF-8');
+//		f.append("Gogo\n",'UTF-8');
 
 	}
 }

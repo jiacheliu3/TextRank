@@ -12,7 +12,8 @@ class PageRankCalc {
 		initStopWords();
 	}
 	public static void initStopWords(){
-		String base="models/stopwords/";
+		String base=FnlpManager.base+"stopwords/";
+		println "Initializing stop words in ${base}";
 		def stopwordFiles=["stopwords_cn.txt",'stopwords_en.txt','stopwords_tw.txt'];
 		stopWords=new HashSet<>();
 		stopwordFiles.each{
