@@ -119,7 +119,7 @@ class PageRankCalc {
 			
 		}
 		//M.print(5,2);
-		println("Transition matrix complete.");
+		//println("Transition matrix complete.");
 		return M;
 		
 	}
@@ -138,7 +138,7 @@ class PageRankCalc {
 		Matrix N=new Matrix(1,n,1.0/n);
 		//iteratively calculate
 		Matrix I=new Matrix(1,n,(1.0-damping)/n);
-		println("Start to compute pagerank");
+		//println("Start to compute pagerank");
 //		//approximation of times of iterations
 //		int iter=(int)(Math.log(n)/Math.log(10))+1;
 //		for(int i=0;i<iter;i++){
@@ -157,7 +157,7 @@ class PageRankCalc {
 			}
 			times++;
 		}
-		println("Converged in ${times} iterations.");
+		println("Pagerank finished in ${times} iterations.");
 		//assign ranks to nodes
 		Map<String,Double> pageRank=new LinkedHashMap<>();
 		def findName={number->
@@ -186,32 +186,32 @@ class PageRankCalc {
 		}
 		return normalizedRank;
 	}
-	public static void main(String[] args){
-		def nodes=['a','b','c','d','e','f','g','h','i','j','k'];
-		def set=[['source':'b','target':'c','weight':1],
-			['source':'b','target':'c','weight':1],
-			['source':'c','target':'b','weight':1],
-			['source':'d','target':'a','weight':1],
-			['source':'d','target':'b','weight':1],
-			['source':'e','target':'b','weight':1],
-			['source':'e','target':'d','weight':1],
-			['source':'e','target':'f','weight':1],
-			['source':'f','target':'b','weight':1],
-			['source':'f','target':'e','weight':1],
-			['source':'g','target':'b','weight':1],
-			['source':'g','target':'e','weight':1],
-			['source':'h','target':'b','weight':1],
-			['source':'h','target':'e','weight':1],
-			['source':'i','target':'b','weight':1],
-			['source':'i','target':'e','weight':1],
-			['source':'j','target':'e','weight':1],
-			['source':'k','target':'e','weight':1]];
-		Set<Map<String>> edges=new HashSet<>();
-		edges.addAll(set);
-
-		def yarank=calculatePageRank(nodes,edges,false);
-		println yarank;
-		yarank=normalize(yarank);
-		println yarank;
-	}
+//	public static void main(String[] args){
+//		def nodes=['a','b','c','d','e','f','g','h','i','j','k'];
+//		def set=[['source':'b','target':'c','weight':1],
+//			['source':'b','target':'c','weight':1],
+//			['source':'c','target':'b','weight':1],
+//			['source':'d','target':'a','weight':1],
+//			['source':'d','target':'b','weight':1],
+//			['source':'e','target':'b','weight':1],
+//			['source':'e','target':'d','weight':1],
+//			['source':'e','target':'f','weight':1],
+//			['source':'f','target':'b','weight':1],
+//			['source':'f','target':'e','weight':1],
+//			['source':'g','target':'b','weight':1],
+//			['source':'g','target':'e','weight':1],
+//			['source':'h','target':'b','weight':1],
+//			['source':'h','target':'e','weight':1],
+//			['source':'i','target':'b','weight':1],
+//			['source':'i','target':'e','weight':1],
+//			['source':'j','target':'e','weight':1],
+//			['source':'k','target':'e','weight':1]];
+//		Set<Map<String>> edges=new HashSet<>();
+//		edges.addAll(set);
+//
+//		def yarank=calculatePageRank(nodes,edges,false);
+//		println yarank;
+//		yarank=normalize(yarank);
+//		println yarank;
+//	}
 }

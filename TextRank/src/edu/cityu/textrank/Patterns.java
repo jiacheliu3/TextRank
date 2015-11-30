@@ -31,10 +31,10 @@ public enum Patterns {
 	public String reg(){
 		return reg;
 	}
-	public static void main(String[] args){
-		Pattern nonsense=Pattern.compile("[^A-Za-z0-9\u4e00-\u9fa5]+");
-		String test="abc . ___ -defg[h}ijk";
-		System.out.println(test.replaceAll("[^A-Za-z0-9\u4e00-\u9fa5]+", ""));
-		
-	}
+//	public static void main(String[] args){
+//		Pattern nonsense=Pattern.compile("[^A-Za-z0-9\u4e00-\u9fa5]+");
+//		String test="abc . ___ -defg[h}ijk";
+//		System.out.println(test.replaceAll("[^A-Za-z0-9\u4e00-\u9fa5]+", ""));
+//		
+//	}
 }

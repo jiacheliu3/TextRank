@@ -52,9 +52,9 @@ class WordCount {
 		
 		return trun;
 	}
-	public static void main(String[] args){
-		Date date=new Date();
-		Date hourly=convertToHour(date);
-		println hourly;
-	}
+//	public static void main(String[] args){
+//		Date date=new Date();
+//		Date hourly=convertToHour(date);
+//		println hourly;
+//	}
 }

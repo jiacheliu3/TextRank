@@ -15,13 +15,13 @@ import java.util.regex.Pattern;
 
 class FileBreaker {
 	static String path="C:\\sorted\\";
-	
+
 	public static Pattern id;
 	public static Pattern ws;
 	public static Pattern block;
 	public static Pattern fp;
 	public static Pattern image;
-	
+
 	static{
 		init();
 	}
@@ -34,10 +34,10 @@ class FileBreaker {
 		String num=Patterns.NUM.reg();
 		String combine=url+"\\s+"+date+"\\s+"+time+"\\s+"+num+"\\s+"+num+"\\s+"+url;
 		block=Pattern.compile(combine);
-		
+
 		String forwardBlock=num+"\\s+"+num+"\\s+"+url+"\\s+"+url;
 		fp=Pattern.compile(forwardBlock);
-		
+
 		image=Pattern.compile("http[s]?://.*\\.jpg");
 	}
 	public static Weibo processLine(String line) {
@@ -64,7 +64,7 @@ class FileBreaker {
 		Matcher bm=block.matcher(line);
 		if(!bm.find()){
 			System.out.println("Block not found");
-			
+
 		}
 		String sub=bm.group();
 		Pattern dp=Patterns.DATE.value();
@@ -88,14 +88,14 @@ class FileBreaker {
 		int blockEnd=bm.end();
 		String content=line.substring(contentStart,contentEnd).trim();
 		System.out.println(content);
-		
+
 		//truncate line, removing studied part
 		line=line.substring(blockEnd);
-		
+
 		Matcher fm=fp.matcher(line);
 		if(!fm.find()){
 			System.out.println("Not forwarded message!");
-			
+
 		}
 		else{
 			System.out.println("Forwarded message");
@@ -106,7 +106,7 @@ class FileBreaker {
 			String ownerName=line.substring(0,fwm.start()).trim();
 			System.out.println(ownerName);
 			line=line.substring(fwm.end()).trim();
-			
+
 			int fcEnd;
 			Matcher im=image.matcher(line);
 			if(im.find()){
@@ -115,27 +115,27 @@ class FileBreaker {
 				Matcher whitespace=ws.matcher(line);
 				whitespace.find();
 				fcEnd=whitespace.start();
-				
+
 			}
 			String forwardContent=line.substring(0,fcEnd);
 			System.out.println(forwardContent);
 			//add to the content of weibo
 			content=forwardContent+content;
-			
+
 			line=line.substring(fcEnd).trim();
-			
+
 		}
 		//save current process
 		w.setContent(content);
 		processWeibo(w);
-		
+
 		System.out.println("Successfully created weibo "+w.toString());
 		//check if another weibo is on the same line
-//		Matcher yabm=block.matcher(line);
-//		if(yabm.find()){
-//			System.out.println("Another weibo item on the same line!");
-//			processLine(line);
-//		}
+		Matcher yabm=block.matcher(line);
+		if(yabm.find()){
+			System.out.println("Another weibo item on the same line!");
+			processLine(line);
+		}
 		return w;
 	}
 	public static void processWeibo(Weibo w){
@@ -145,14 +145,25 @@ class FileBreaker {
 		if(!outputFile.exists()){
 			outputFile.createNewFile();
 		}
-		
-		outputFile.append("\n"+weiboToString(w));
-		
-		
-		
+
+		outputFile.append("\n"+weiboToString(w),'UTF-8');
+
+
+
 	}
 	public static String weiboToString(Weibo w){
-		return processToHour(w.createDate)+"\t"+w.content;
+		String text=w.content;
+		Matcher m = id.matcher(text);
+
+		if (m.find()) {
+			String i = m.group();
+			text = text.substring(m.end()).trim();
+			// System.out.println(line);
+			
+		}
+
+		//return processToHour(w.createDate)+"\t"+w.content;
+		return processToHour(w.createDate)+"\t"+text;
 	}
 	public static String processDate(Date date){
 		int y=date.getYear()+1900;
@@ -171,17 +182,17 @@ class FileBreaker {
 		}else{
 			day=d+'';
 		}
-//		int h=date.getHours();
-//		String hour;
-//		if(h<10){
-//			hour="0"+h;
-//		}else{
-//			hour=h+'';
-//		}
-		
+		//		int h=date.getHours();
+		//		String hour;
+		//		if(h<10){
+		//			hour="0"+h;
+		//		}else{
+		//			hour=h+'';
+		//		}
+
 		//println("Year:${y},Month:${m},Date:${d},Hour:${h}");
 		return year+month+day;
-		
+
 	}
 	public static String processToHour(Date date){
 		int y=date.getYear()+1900;
@@ -207,10 +218,10 @@ class FileBreaker {
 		}else{
 			hour=h+'';
 		}
-		
+
 		//println("Year:${y},Month:${m},Date:${d},Hour:${h}");
 		return year+month+day+hour;
-		
+
 	}
 	public static void processFile(File file){
 		BufferedReader reader=null;
@@ -224,7 +235,7 @@ class FileBreaker {
 			System.out.println("Finished processing file "+file.getPath());
 		}
 		String line;
-		
+
 
 		try {
 			while ((line = reader.readLine()) != null) {
@@ -247,24 +258,22 @@ class FileBreaker {
 			return;
 		}
 		path=outputPath;
-		
+
 		println "Output path set to ${path}";
 		File file=new File(inputPath);
 		if(file.isDirectory()){
-			file.eachFile {
-				processFile(it);
-			}
+			file.eachFile { processFile(it); }
 		}else{
 			processFile(file);
 		}
 	}
-	public static void main(String[] args) throws Exception {
-		startProcess("C:\\data","C:\\Users\\user\\sorted\\");
-//		File f=new File("D:\\gogo");
-//		if(!f.exists())
-//			f.createNewFile();
-//		f.append("Go",'UTF-8');
-//		f.append("Gogo\n",'UTF-8');
-
-	}
+//	public static void main(String[] args) throws Exception {
+//		startProcess("D:\\weibo","D:\\whatever\\");
+//		//		File f=new File("D:\\gogo");
+//		//		if(!f.exists())
+//		//			f.createNewFile();
+//		//		f.append("Go",'UTF-8');
+//		//		f.append("Gogo\n",'UTF-8');
+//
+//	}
 }

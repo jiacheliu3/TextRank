@@ -57,7 +57,7 @@ class TextRankTester {
 		double precisionAvg=precisionList.sum()/siz;
 		double fScoreAvg=fScoreList.sum()/siz;
 		println """
-			Size of test:
+			Size of test: ${siz}
 			Average Recall: ${recallAvg}
 			Average Precision: ${precisionAvg}
 			Average F-score: ${fScoreAvg}
